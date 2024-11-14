@@ -36,7 +36,8 @@ app.get("/", (req, res) =>
     }
 );
 
-app.get("/transactions", (req, res) =>
+
+app.get("/home", (req, res) =>
     {
         knex.select().from('transactions').orderBy('transaction_id').then( transactions => {
             res.render("home", { transaction: transactions });
@@ -45,6 +46,18 @@ app.get("/transactions", (req, res) =>
             res.status(500).json({err});
         });
     });
+
+
+
+// app.get("/transactions", (req, res) =>
+//     {
+//         knex.select().from('transactions').orderBy('transaction_id').then( transactions => {
+//             res.render("home", { transaction: transactions });
+//         }).catch(err => {
+//             console.log(err);
+//             res.status(500).json({err});
+//         });
+//     });
 
     
 app.listen(port, () => console.log('listening'));
