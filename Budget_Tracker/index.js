@@ -31,33 +31,31 @@ const knex = require("knex") ({
 app.get("/", (req, res) =>
     {
         res.render("index");
-        // console.log(err);
-        //     res.status(500).json({err});
     }
 );
 
 
 app.get("/home", (req, res) =>
     {
+        res.render("home");
+        
+    });
+
+app.get("/budgets", (req, res) =>
+    {
+        res.render("budget");
+        
+    });
+
+app.get("/transactions", (req, res) =>
+    {
         knex.select().from('transactions').orderBy('transaction_id').then( transactions => {
-            res.render("home", { transaction: transactions });
+            res.render("transactions", { transaction: transactions });
         }).catch(err => {
             console.log(err);
             res.status(500).json({err});
         });
     });
-
-
-
-// app.get("/transactions", (req, res) =>
-//     {
-//         knex.select().from('transactions').orderBy('transaction_id').then( transactions => {
-//             res.render("home", { transaction: transactions });
-//         }).catch(err => {
-//             console.log(err);
-//             res.status(500).json({err});
-//         });
-//     });
 
     
 app.listen(port, () => console.log('listening'));

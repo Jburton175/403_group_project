@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transactions</title>
+</head>
+<body>
+    <table border="1" cellpadding="10" cellspacing="0">
+        <thead>
+            <tr>
+                <th>Transaction ID</th>
+                <th>User ID</th>
+                <th>Transaction Date</th>
+                <th>Transaction Amount</th>
+                <th>Account ID</th>
+                <th>Transaction Type ID</th>                                                            
+            </tr>  
+        </thead>              
+        <tbody>
+            <% for (let iCount = 0; iCount < transaction.length; iCount++) { %>
+            <tr>                
+                <td><%= transaction[iCount].transaction_id %></td>
+                <td><%= transaction[iCount].user_id %></td>
+                <td><%= transaction[iCount].transaction_date %></td>         
+                <td><%= transaction[iCount].transaction_amount %></td>
+                <td><%= transaction[iCount].account_id %></td>
+                <td><%= transaction[iCount].transaction_type_id %></td>                              
+                <td>
+                    <form action="/updateTransaction/<%= pokemon[iCount].id %>" method="POST">
+                        <button type="submit">Edit</button>
+                    </form>
+                </td>
+                <td>
+                    <form action="/deleteTransaction/<%= pokemon[iCount].id %>" method="POST">
+                        <button type="submit">Delete</button>
+                    </form>
+                </td>  
+            </tr>  
+            <% } %>                          
+        </tbody>
+    </table>  
+    <br><br>
+    <form action="/addTransaction" method="GET">
+        <button type="submit">Add</button>
+    </form>   
+</body>
+</html>
