@@ -28,12 +28,18 @@ const knex = require("knex") ({
     }
 });
 
-
-
 app.get("/", (req, res) =>
     {
+        res.render("index");
+        // console.log(err);
+        //     res.status(500).json({err});
+    }
+);
+
+app.get("/transactions", (req, res) =>
+    {
         knex.select().from('transactions').orderBy('transaction_id').then( transactions => {
-            res.render("index", { transaction: transactions });
+            res.render("home", { transaction: transactions });
         }).catch(err => {
             console.log(err);
             res.status(500).json({err});
