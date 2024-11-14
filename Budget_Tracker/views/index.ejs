@@ -1,64 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Home</title>
-
-        <link rel="stylesheet" href="styles.css" type="text/css">
-
-
-    </head>
-    <body>
-        <!-- <label>Transactions</label>
-        <br><br>
-        <form action="/searchPokemon" method="get">
-            <label>POKEMON NAME:</label>
-            <br><br>
-            <input type="text" id="searchName" name="searchName">
-            <br><br>          
-            <button type="submit">Search</button>
-        </form>
-        <br><br>    
-        <br><br>     -->
-        <table border="1" cellpadding="10" cellspacing="0">
-            <thead>
-                <tr>
-                    <th>Transaction ID</th>
-                    <th>User ID</th>
-                    <th>Transaction Date</th>
-                    <th>Transaction Amount</th>
-                    <th>Account ID</th>
-                    <th>Transaction Type ID</th>                                                            
-                </tr>  
-            </thead>              
-            <tbody>
-                <% for (let iCount = 0; iCount < transaction.length; iCount++) { %>
-                <tr>                
-                    <td><%= transaction[iCount].transaction_id %></td>
-                    <td><%= transaction[iCount].user_id %></td>
-                    <td><%= transaction[iCount].transaction_date %></td>         
-                    <td><%= transaction[iCount].transaction_amount %></td>
-                    <td><%= transaction[iCount].account_id %></td>
-                    <td><%= transaction[iCount].transaction_type_id %></td>                              
-                    <td>
-                        <form action="/updateTransaction/<%= pokemon[iCount].id %>" method="POST">
-                            <button type="submit">Edit</button>
-                        </form>
-                    </td>
-                    <td>
-                        <form action="/deleteTransaction/<%= pokemon[iCount].id %>" method="POST">
-                            <button type="submit">Delete</button>
-                        </form>
-                    </td>  
-                </tr>  
-                <% } %>                          
-            </tbody>
-        </table>  
-        <br><br>
-        <form action="/addTransaction" method="GET">
-            <button type="submit">Add</button>
-        </form>                    
-    </body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+</head>
+<body>
+  <h2>Login</h2>
+  <form action="/login" method="POST">
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username" required><br><br>
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" required><br><br>
+    <button type="submit">Login</button>
+  </form>
+</body>
 </html>

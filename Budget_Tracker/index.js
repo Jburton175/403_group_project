@@ -1,3 +1,6 @@
+// Run this command in the reminal to commit to github
+// git commit --allow-empty -m ""
+
 let express = require("express");
 
 let app = express();
