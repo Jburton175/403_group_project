@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Bryce512/CodePipelinetoEB"
+    "url": "https://github.com/Jburton175/403_group_project"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Bryce512/CodePipelinetoEB"
+    "url": "https://github.com/Jburton175/403_group_project"
   },
-  "homepage": "https://github.com/Bryce512/CodePipelinetoEB/#readme",
+  "homepage": "https://github.com/Jburton175/403_group_project/#readme",
   "dependencies": {
     "ejs": "^3.1.10",
     "express": "^4.21.1",
