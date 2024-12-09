@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <style>
+    /* Reset some default styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* Center the form on the page */
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background-color: #f4f4f9;
+      font-family: Arial, sans-serif;
+    }
+
+    /* Styling the form container */
+    .login-container {
+      background-color: #fff;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    /* Form header */
+    .login-container h2 {
+      margin-bottom: 1.5rem;
+      color: #333;
+    }
+
+    /* Style for inputs and labels */
+    .login-container label {
+      font-size: 0.9rem;
+      color: #555;
+      display: block;
+      text-align: left;
+      margin-bottom: 0.5rem;
+    }
+
+    .login-container input {
+      width: 100%;
+      padding: 0.5rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+
+    /* Styling the button */
+    .login-container button {
+      width: 100%;
+      padding: 0.7rem;
+      font-size: 1rem;
+      color: #fff;
+      background-color: #007bff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .login-container button:hover {
+      background-color: #0056b3;
+    }
+
+    /* Link to other pages */
+    .login-container .create-account,
+    .login-container .home-link {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+    }
+
+    .login-container a {
+      color: #007bff;
+      text-decoration: none;
+    }
+
+    .login-container a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <% if (security == false) { %>
+
+    <div class="login-container">
+      <h2>Login</h2>
+      <form action="/login" method="post">
+        <!-- User Name -->
+        <label for="username">User Name:</label>
+        <input type="text" id="username" name="username" placeholder="Enter your username" required>
+        <!-- Password -->
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" placeholder="Enter your password" required>
+        <!-- Submit Button -->
+        <button type="submit">Submit</button>
+        <!-- Links -->
+        <div class="create-account">
+          <p>Don't have an account?</p>
+          <a href="/register">Create an Account</a>
+        </div>
+      </form>
+    </div>
+    
+    </div>
+    <% } %>
+    <% if (security == true) { %>
+
+      <h1>Home</h1>
+        <br>
+        <p>
+        <a href="/budgets">Budgets Page</a>
+        <br>
+        <a href="/transactions">Transactions Page</a>
+        </p>
+        <% } %>
+  </div>
+</body>
+</html>
