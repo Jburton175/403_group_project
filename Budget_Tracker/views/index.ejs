@@ -92,25 +92,39 @@
   </style>
 </head>
 <body>
-  <div class="login-container">
-    <h2>Login</h2>
-    <form action="/login" method="POST">
-      <label for="username">Username:</label>
-      <input type="text" id="username" name="username" required>
+  <% if (security == false) { %>
 
-      <label for="password">Password:</label>
-      <input type="password" id="password" name="password" required>
-
-      <button type="submit">Login</button>
-    </form>
-
-    <div class="create-account">
-      <p>Don't have an account? <a href="/register">Create an Account</a></p>
+    <div class="login-container">
+      <h2>Login</h2>
+      <form action="/login" method="post">
+        <!-- User Name -->
+        <label for="username">User Name:</label>
+        <input type="text" id="username" name="username" placeholder="Enter your username" required>
+        <!-- Password -->
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" placeholder="Enter your password" required>
+        <!-- Submit Button -->
+        <button type="submit">Submit</button>
+        <!-- Links -->
+        <div class="create-account">
+          <p>Don't have an account?</p>
+          <a href="/register">Create an Account</a>
+        </div>
+      </form>
     </div>
-
-    <div class="home-link">
-      <a href="/home">Home Page</a>
+    
     </div>
+    <% } %>
+    <% if (security == true) { %>
+
+      <h1>Home</h1>
+        <br>
+        <p>
+        <a href="/budgets">Budgets Page</a>
+        <br>
+        <a href="/transactions">Transactions Page</a>
+        </p>
+        <% } %>
   </div>
 </body>
 </html>
