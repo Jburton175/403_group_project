@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Jburton175/403_group_project"
+    "url": "git+https://github.com/Jburton175/403_group_project.git"
   },
   "author": "",
   "license": "ISC",
@@ -19,12 +19,16 @@
   "homepage": "https://github.com/Jburton175/403_group_project/#readme",
   "dependencies": {
     "ejs": "^3.1.10",
-    "express": "^4.21.1",
+    "express": "^4.21.2",
     "knex": "^3.1.0",
     "materialize-css": "^1.0.0",
+    "node": "^22.12.0",
     "pg": "^8.13.1"
   },
   "devDependencies": {
     "mocha": "^10.8.2"
+  },
+  "directories": {
+    "test": "tests"
   }
 }
