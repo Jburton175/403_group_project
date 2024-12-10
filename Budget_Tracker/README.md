@@ -1,1 +1,0 @@
-# CodePipeline to Elastic Beanstalk
