@@ -6,6 +6,15 @@
     <title>Budgets</title>
 </head>
 <body>
-    
+    <form action="/budget" method="POST">
+        <label for="transaction_type_id">Category:</label>
+        <select name="transaction_type_id" id="transaction_type_id">
+            <option value="" disabled selected style="color: gray;">Select a Category</option>
+            <% trantypes.forEach(type => { %>
+                <option value="<%= type.transaction_type_id %>"><%= type.transaction_type %></option>
+            <% }) %>
+        </select>
+        
+    </form>
 </body>
 </html>

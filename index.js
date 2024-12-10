@@ -156,9 +156,21 @@ app.get("/home", (req, res) =>
         
     });
 
+// render the budget creation page
 app.get("/budgets", (req, res) =>
     {
-        res.render("budget");
+        knex('transaction_types')
+        .select()
+        .then(trantypes => {
+
+            knex('budget_date_types')
+            .select()
+            .then(datetypes => {
+
+                res.render("budget", { security, trantypes, datetypes });
+
+            })
+        })
         
     });
 
