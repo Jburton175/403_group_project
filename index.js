@@ -146,26 +146,30 @@ app.post('/createaccount', (req, res) => {
 
 app.get('/', (req, res) => {
 
-    res.render('index', { user: req.session.user });
+    res.render('index');
 
 });
 
 app.get("/home", (req, res) =>
     {
-        res.render("home", { user: req.session.user });
+        res.render("home");
         
     });
 
 app.get("/budgets", (req, res) =>
     {
-        res.render("budget", { user: req.session.user});
+        res.render("budget");
         
     });
 
 app.get("/transactions", (req, res) =>
     {
-        knex.select().from('transactions').orderBy('transaction_id').then( transactions => {
-            res.render("transactions", {user: req.session.user, transaction: transactions });
+        knex.select()
+        .from('transactions')
+        .where('user_id' === req.session.user.user_id)
+        .orderBy('transaction_id')
+        .then( transactions => {
+            res.render("transactions", {transaction: transactions });
         }).catch(err => {
             console.log(err);
             res.status(500).json({err});
