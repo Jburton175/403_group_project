@@ -167,7 +167,7 @@ app.get("/createBudget", (req, res) =>
             .select()
             .then(datetypes => {
 
-                res.render("createBudget", { security, trantypes, datetypes });
+                res.render("createBudget", { trantypes, datetypes });
 
             })
         })
