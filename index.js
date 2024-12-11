@@ -211,22 +211,33 @@ app.get('/editBudget/:id', (req, res) => {
         if (!budget) {
             return res.status(404).send('Budget not found');
         }
+
+        if (budget.budget_date) {
+            budget.budget_date = new Date(budget.budget_date).toISOString().split('T')[0];
+        }
   
         // query for sewing proficiency dropdown
         knex('transaction_types')
         .select('transaction_type_id', 'transaction_type') 
         .then(trantypes => {
-                // Render the EJS template with all data
-                res.render('editBudget', { budget, trantypes});
+                knex('budget_date_types')
+                .select('budget_date_type_id', 'budget_date_type')
+                .then(datetypes => {
+                    res.render('editBudget', { budget, trantypes, datetypes});
+                })
+                .catch(error => {
+                    console.error('Error fetching budget date types: ', error);
+                    res.status(500).send('Internal Server Error');
+                });
             })
             .catch(error => {
                 console.error('Error fetching transaction types: ', error);
-                res.status(500).send('Internal Server Error: transaction types');
+                res.status(500).send('Internal Server Error');
             });
     })
     .catch(error => {
         console.error('Error fetching budget: ', error);
-        res.status(500).send('Internal Server Error: budgets');
+        res.status(500).send('Internal Server Error');
     });
 });
 
@@ -253,7 +264,7 @@ app.post('/editBudget/:id', (req, res) => {
         .then(() => {
             console.log('Form submitted successfully!');
             console.log('Request body:', req.body);
-            res.redirect('/home'); 
+            res.redirect('/budgets'); 
         })
   
         .catch(error => {

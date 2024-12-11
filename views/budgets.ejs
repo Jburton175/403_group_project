@@ -122,7 +122,7 @@
                         </form>
                     </td>
                     <td>
-                        <form action="/deleteBudget/<%= budgets[iCount].budget_id %>" method="POST" class="action-buttons">
+                        <form action="/deleteBudget/<%= budgets[iCount].budget_id %>" method="POST" class="action-buttons" onsubmit="confirm('Are you sure you want to delete this budget?')">
                             <button type="submit">Delete</button>
                         </form>
                     </td>  
