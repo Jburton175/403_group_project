@@ -29,12 +29,20 @@
                 <td><%= transaction[iCount].account_id %></td>
                 <td><%= transaction[iCount].transaction_type_id %></td>                              
                 <td>
+<<<<<<< HEAD
                     <form action="/updateTransaction/<%= // transactions.[iCount].user_id %>" method="POST">
+=======
+                    <form action="/updateTransaction/<%= transaction[iCount].transaction_id %>" method="POST">
+>>>>>>> f63b188e4862a6d20c2ca67f83f7a95ea253fba2
                         <button type="submit">Edit</button>
                     </form>
                 </td>
                 <td>
+<<<<<<< HEAD
                     <form action="/deleteTransaction/<%= //transaction.[iCount].user_id %>" method="POST">
+=======
+                    <form action="/deleteTransaction/<%= transaction[iCount].transaction_id %>" method="POST">
+>>>>>>> f63b188e4862a6d20c2ca67f83f7a95ea253fba2
                         <button type="submit">Delete</button>
                     </form>
                 </td>  

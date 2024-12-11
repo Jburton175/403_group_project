@@ -174,7 +174,29 @@ app.get("/budgets", (req, res) =>
         
     });
 
-// render the transactions view
+    app.get("/budgets", (req, res) =>
+        {
+            knex('budgets')
+            .join('transaction_types', 'transaction_types.transaction_type_id', '=', 'budgets.transaction_type_id')
+            .join('budget_date_types', 'budget_date_types.budget_date_type_id', '=', 'budgets.budget_date_type_id')
+            .select('budgets.budget_id', 
+                    'budgets.user_id', 
+                    'transaction_types.transaction_type',
+                    'budgets.budget_date',
+                    'budget_date_types.budget_date_type',
+                    'budgets.budget_amount'
+            )
+            .where('budgets.user_id' === req.session.user.user_id)
+            .orderBy('budgets.budget_date', desc)
+            .then( transactions => {
+                res.render("budget", {transaction: transactions });
+            }).catch(err => {
+                console.log(err);
+                res.status(500).json({err});
+            });
+        });
+    
+
 app.get("/transactions", (req, res) =>
     {
         knex.select('transaction_id',
@@ -257,6 +279,37 @@ app.post('/addTransaction', (req, res) => {
 
         });
   });
+app.post('/deleteTransaction/:transaction_id', (req, res) => {
+    const transaction_id = req.params.transaction_id;
+
+    knex('transactions')
+        .where("transaction_id", transaction_id)
+        .del()
+        .then(() => {
+            console.log(`Transaction: ${transaction_id} removed`);
+            res.redirect('/transactions'); // Redirect back to the dashboard after deletion
+        })
+        .catch(err => {
+            console.error('Error deleting transaction:', err);
+            res.status(500).send('Error deleting transaction');
+        });
+}); 
+
+app.post('/deleteBudget/:budget_id', (req, res) => {
+    const budget_id = req.params.budget_id;
+
+    knex('budgets')
+        .where("budget_id", budget_id)
+        .del()
+        .then(() => {
+            console.log(`Budget: ${budget_id} removed`);
+            res.redirect('/budget'); // Redirect back to the dashboard after deletion
+        })
+        .catch(err => {
+            console.error('Error deleting budget:', err);
+            res.status(500).send('Error deleting budget');
+        });
+}); 
 
     
 app.listen(port, () => console.log('listening'));
