@@ -38,7 +38,7 @@ const knex = require("knex")({
     connection: {
         host: process.env.RDS_HOSTNAME || "localhost",
         user: process.env.RDS_USERNAME || "postgres",
-        password: process.env.RDS_PASSWORD || "admin",
+        password: process.env.RDS_PASSWORD || "Roadsinthewood2!",
         database: process.env.RDS_DB_NAME || "budget_tracker",
         port: process.env.RDS_PORT || 5432,
         ssl: process.env.DB_SSL ? { rejectUnauthorized: false } : false
@@ -271,10 +271,11 @@ app.get("/budgets", (req, res) =>
                     'budget_date_types.budget_date_type',
                     'budgets.budget_amount'
             )
-            .where('budgets.user_id' === req.session.user.user_id)
+            .where({'user_id': req.session.user.user_id})
             .orderBy('budgets.budget_date', 'desc')
             .then( budgets => {
-                res.render("budget", {budgets: budgets });
+                res.render("budgets", {budgets: budgets, user: req.session.user});
+                console.log(budgets)
             }).catch(err => {
                 console.log(err);
                 res.status(500).json({err});
@@ -394,7 +395,7 @@ app.post('/deleteBudget/:budget_id', (req, res) => {
         .del()
         .then(() => {
             console.log(`Budget: ${budget_id} removed`);
-            res.redirect('/budget'); // Redirect back to the dashboard after deletion
+            res.redirect('/budgets'); // Redirect back to the dashboard after deletion
         })
         .catch(err => {
             console.error('Error deleting budget:', err);
