@@ -189,23 +189,37 @@ app.get("/transactions", (req, res) =>
     });
 
 
-    app.post('/deleteTransaction/:transaction_id', (req, res) => {
-        const transaction_id = req.params.transaction_id;
-    
-        knex('transactions')
-            .where("transaction_id", transaction_id)
-            .del()
-            .then(() => {
-                console.log(`Transaction: ${transaction_id} removed`);
-                res.redirect('/transactions'); // Redirect back to the dashboard after deletion
-            })
-            .catch(err => {
-                console.error('Error deleting transaction:', err);
-                res.status(500).send('Error deleting transaction');
-            });
-    }); 
+app.post('/deleteTransaction/:transaction_id', (req, res) => {
+    const transaction_id = req.params.transaction_id;
 
+    knex('transactions')
+        .where("transaction_id", transaction_id)
+        .del()
+        .then(() => {
+            console.log(`Transaction: ${transaction_id} removed`);
+            res.redirect('/transactions'); // Redirect back to the dashboard after deletion
+        })
+        .catch(err => {
+            console.error('Error deleting transaction:', err);
+            res.status(500).send('Error deleting transaction');
+        });
+}); 
 
+app.post('/deleteBudget/:budget_id', (req, res) => {
+    const budget_id = req.params.budget_id;
+
+    knex('budgets')
+        .where("budget_id", budget_id)
+        .del()
+        .then(() => {
+            console.log(`Budget: ${budget_id} removed`);
+            res.redirect('/budget'); // Redirect back to the dashboard after deletion
+        })
+        .catch(err => {
+            console.error('Error deleting budget:', err);
+            res.status(500).send('Error deleting budget');
+        });
+}); 
 
     
 app.listen(port, () => console.log('listening'));
