@@ -97,6 +97,7 @@
                     <th>Budget Date</th>
                     <th>Time Period</th>
                     <th>Amount</th>
+                    <th>View</th>
                     <th>Edit</th>
                     <th>Delete</th>
                 </tr>  
@@ -109,6 +110,12 @@
                     <td><%= new Date(budgets[iCount].budget_date).toLocaleDateString('en-US') %></td>    
                     <td><%= budgets[iCount].budget_date_type %></td>
                     <td>$<%= budgets[iCount].budget_amount %></td>                              
+                    <td>
+                        <form action="/viewBudget/<%= budgets[iCount].budget_id %>" method="GET" class="action-buttons">
+                            <button type="submit">View</button>
+                        </form>
+                    </td>
+                    
                     <td>
                         <form action="/editBudget/<%= budgets[iCount].budget_id %>" method="POST" class="action-buttons">
                             <button type="submit">Edit</button>
