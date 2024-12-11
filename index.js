@@ -369,6 +369,34 @@ app.post('/addTransaction', (req, res) => {
 });
    
 
+app.get('/viewBudget/:budget_id', (req, res) => {
+    const budget_id = req.params.budget_id; // Fetch user_id from URL parameters
+   
+    // Fetch all necessary data in parallel using Promise.all
+    Promise.all([
+        knex('budgets')
+        .join('transaction_types', 'transaction_types.transaction_type_id', '=', 'budgets.transaction_type_id')
+        .join('budget_date_type', 'budget_date_type.budget_date_type_id', '=', 'budgets.budget_date_type_id')
+
+            .select(
+                'budgets.budget_id',
+                'budgets.user_id',
+                'transaction_types.transaction_type',
+                'budgets.budget_date',
+                'budget_date_type.budget_date_type',
+                'budgets.budget_amount'
+            )
+            .where('budget_id', budget_id),
+    ])
+        .then(budgets => {
+            // Render the view with all the fetched data
+            res.render('addTransaction', { budgets: budgets });
+        })
+        .catch(err => {
+            console.error('Error fetching data:', err.message);
+            res.status(500).send('Failed to load data for the transaction form.');
+        });
+});
 
 
 app.post('/deleteTransaction/:transaction_id', (req, res) => {
