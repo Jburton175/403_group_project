@@ -4,55 +4,140 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Transactions</title>
+    <style>
+        /* Reset some default styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Center the page */
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #f4f4f9;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Styling the container */
+        .container {
+            background-color: #fff;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+        }
+
+        /* Table styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1rem;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f4f4f9;
+            color: #333;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        /* Button styles */
+        button {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .add-transaction {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 1rem;
+        }
+    </style>
 </head>
 <body>
-    <table border="1" cellpadding="10" cellspacing="0">
-        <thead>
-            <tr>
-                <th>Transaction ID</th>
-                <th>User ID</th>
-                <th>Transaction Date</th>
-                <th>Transaction Amount</th>
-                <th>Account ID</th>
-                <th>Transaction Type ID</th>  
-                <th>Edit</th>                                                          
-                <th>Delete</th>
-            </tr>  
-        </thead>              
-        <tbody>
-            <% for (let iCount = 0; iCount < transaction.length; iCount++) { %>
-            <tr>                
-                <td><%= transaction[iCount].transaction_id %></td>
-                <td><%= transaction[iCount].user_id %></td>
-                <td><%= transaction[iCount].transaction_date %></td>         
-                <td><%= transaction[iCount].transaction_amount %></td>
-                <td><%= transaction[iCount].account_id %></td>
-                <td><%= transaction[iCount].transaction_type_id %></td>                              
-                <td>
-<<<<<<< HEAD
-                    <form action="/updateTransaction/<%= // transactions.[iCount].user_id %>" method="POST">
-=======
-                    <form action="/updateTransaction/<%= transaction[iCount].transaction_id %>" method="POST">
->>>>>>> f63b188e4862a6d20c2ca67f83f7a95ea253fba2
-                        <button type="submit">Edit</button>
-                    </form>
-                </td>
-                <td>
-<<<<<<< HEAD
-                    <form action="/deleteTransaction/<%= //transaction.[iCount].user_id %>" method="POST">
-=======
-                    <form action="/deleteTransaction/<%= transaction[iCount].transaction_id %>" method="POST">
->>>>>>> f63b188e4862a6d20c2ca67f83f7a95ea253fba2
-                        <button type="submit">Delete</button>
-                    </form>
-                </td>  
-            </tr>  
-            <% } %>                          
-        </tbody>
-    </table>  
-    <br><br>
-    <form action="/addTransaction/<%=transaction[0].user_id %>" method="GET">
-        <button type="submit">Add</button>
-    </form>   
+    <div class="container">
+        <h2 style="text-align: center; margin-bottom: 1.5rem;">Transactions</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Transaction ID</th>
+                    <th>User ID</th>
+                    <th>Transaction Date</th>
+                    <th>Transaction Amount</th>
+                    <th>Account ID</th>
+                    <th>Transaction Type ID</th>
+                    <th>Edit</th>
+                    <th>Delete</th>
+                </tr>  
+            </thead>              
+            <tbody>
+                <% for (let iCount = 0; iCount < transaction.length; iCount++) { %>
+                <tr>                
+                    <td><%= transaction[iCount].transaction_id %></td>
+                    <td><%= transaction[iCount].user_id %></td>
+                    <td><%= transaction[iCount].transaction_date %></td>         
+                    <td><%= transaction[iCount].transaction_amount %></td>
+                    <td><%= transaction[iCount].account_id %></td>
+                    <td><%= transaction[iCount].transaction_type_id %></td>                              
+                    <td>
+                        <form action="/updateTransaction/<%= transaction[iCount].transaction_id %>" method="POST" class="action-buttons">
+                            <button type="submit">Edit</button>
+                        </form>
+                    </td>
+                    <td>
+                        <form action="/deleteTransaction/<%= transaction[iCount].transaction_id %>" method="POST" class="action-buttons">
+                            <button type="submit">Delete</button>
+                        </form>
+                    </td>  
+                </tr>  
+                <% } %>                          
+            </tbody>
+        </table>  
+        <div class="add-transaction">
+            <!-- Display the user ID -->
+            <p>User ID: <%= user.user_id %></p>
+            <!-- Use the user ID in the form -->
+            <form action="/addTransaction/<%= user.user_id %>" method="GET">
+                <button type="submit">Add Transaction</button>
+            </form>
+        </div>
+        <div class="search-transaction">
+            <form action="/searchTransaction" method="GET">
+                <button type="submit">Search Transaction</button>
+            </form>
+        </div>
+    </div>
 </body>
 </html>
