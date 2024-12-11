@@ -27,12 +27,12 @@
                 <td><%= transaction[iCount].account_id %></td>
                 <td><%= transaction[iCount].transaction_type_id %></td>                              
                 <td>
-                    <form action="/updateTransaction/<%= pokemon[iCount].id %>" method="POST">
+                    <form action="/updateTransaction/<%= transaction[iCount].transaction_id %>" method="POST">
                         <button type="submit">Edit</button>
                     </form>
                 </td>
                 <td>
-                    <form action="/deleteTransaction/<%= pokemon[iCount].id %>" method="POST">
+                    <form action="/deleteTransaction/<%= transaction[iCount].transaction_id %>" method="POST">
                         <button type="submit">Delete</button>
                     </form>
                 </td>  
