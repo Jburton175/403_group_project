@@ -157,7 +157,7 @@ app.get("/home", (req, res) =>
     });
 
 // render the budget creation page
-app.get("/budgets", (req, res) =>
+app.get("/createBudget", (req, res) =>
     {
         knex('transaction_types')
         .select()
@@ -167,12 +167,97 @@ app.get("/budgets", (req, res) =>
             .select()
             .then(datetypes => {
 
-                res.render("budget", { security, trantypes, datetypes });
+                res.render("createBudget", { security, trantypes, datetypes });
 
             })
         })
         
+});
+
+app.post('/createBudget', (req, res) => {
+    
+    const transaction_type_id = req.body.transaction_type_id; // Access each value directly from req.body
+    const budget_date = req.body.budget_date;
+    const budget_date_type_id = req.body.budget_date_type_id;
+    const budget_amount = req.body.budget_amount;
+
+
+    knex('budgets').insert({
+        transaction_type_id: transaction_type_id,
+        budget_date: budget_date,
+        budget_date_type_id: budget_date_type_id,
+        budget_amount: budget_amount,
+    }).then(budget => {
+        res.redirect("/home");
+    }).catch( err => {
+        console.log(err);
+        res.status(500).json({err});
     });
+});
+
+app.get('/editBudget/:id', (req, res) => {
+    let id = req.params.budget_id
+    
+    knex('budgets')
+    .where('budget_id', id)
+    .first()
+    .then(budget => {
+        if (!budget) {
+            return res.status(404).send('Volunteer not found');
+        }
+  
+        // query for sewing proficiency dropdown
+        knex('transaction_types')
+        .select('transaction_type_id', 'transaction_type') 
+        .then(trantypes => {
+                            // Render the EJS template with all data
+                            res.render('editBudget', { budget, trantypes});
+                        })
+                        
+        .catch(error => {
+            console.error('Error fetching transaction types: ', error);
+            res.status(500).send('Internal Server Error');
+        });
+    })
+    .catch(error => {
+        console.error('Error fetching budget: ', error);
+        res.status(500).send('Internal Server Error');
+    });
+});
+
+app.post('/editBudget/:id', (req, res) => {
+    const id = req.params.id;
+  
+    const transaction_type_id = req.body.transaction_type_id; // Access each value directly from req.body
+    const budget_date = req.body.budget_date;
+    const budget_date_type_id = req.body.budget_date_type_id;
+    const budget_amount = req.body.budget_amount; 
+    // const formData = req.body;
+    // console.log(formData);
+    // console.log(formData);       // For demonstration, log the submitted data
+    console.log('Request body:', req.body);
+  
+    knex('budgets')
+        .where('budget_id', id)
+        .update({
+            transaction_type_id: transaction_type_id,
+            budget_date: budget_date, 
+            budget_date_type_id: budget_date_type_id,
+            budget_amount: budget_amount
+        })
+        .then(() => {
+            console.log('Form submitted successfully!');
+            console.log('Request body:', req.body);
+            res.redirect('/home'); 
+        })
+  
+        .catch(error => {
+            console.error('Error adding a volunteer:', error);
+            console.log('Request body:', req.body);
+            res.status(500).send('Internal Server Error');
+  
+        });
+});
 
     app.get("/budgets", (req, res) =>
         {
