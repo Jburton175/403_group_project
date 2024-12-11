@@ -38,7 +38,7 @@ const knex = require("knex")({
     connection: {
         host: process.env.RDS_HOSTNAME || "localhost",
         user: process.env.RDS_USERNAME || "postgres",
-        password: process.env.RDS_PASSWORD || "admin",
+        password: process.env.RDS_PASSWORD || "Roadsinthewood2!",
         database: process.env.RDS_DB_NAME || "budget_tracker",
         port: process.env.RDS_PORT || 5432,
         ssl: process.env.DB_SSL ? { rejectUnauthorized: false } : false
@@ -202,32 +202,31 @@ app.post('/createBudget', (req, res) => {
 });
 
 app.get('/editBudget/:id', (req, res) => {
-    let id = req.params.budget_id
+    let id = req.params.id
     
     knex('budgets')
     .where('budget_id', id)
     .first()
     .then(budget => {
         if (!budget) {
-            return res.status(404).send('Volunteer not found');
+            return res.status(404).send('Budget not found');
         }
   
         // query for sewing proficiency dropdown
         knex('transaction_types')
         .select('transaction_type_id', 'transaction_type') 
         .then(trantypes => {
-                            // Render the EJS template with all data
-                            res.render('editBudget', { budget, trantypes});
-                        })
-                        
-        .catch(error => {
-            console.error('Error fetching transaction types: ', error);
-            res.status(500).send('Internal Server Error');
-        });
+                // Render the EJS template with all data
+                res.render('editBudget', { budget, trantypes});
+            })
+            .catch(error => {
+                console.error('Error fetching transaction types: ', error);
+                res.status(500).send('Internal Server Error: transaction types');
+            });
     })
     .catch(error => {
         console.error('Error fetching budget: ', error);
-        res.status(500).send('Internal Server Error');
+        res.status(500).send('Internal Server Error: budgets');
     });
 });
 

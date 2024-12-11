@@ -13,9 +13,9 @@
     <div>
         <label for="transaction_type_id">Budget for:</label>
         <select name="transaction_type_id" id="transaction_type_id">
-            <% role.forEach(trantypes => { %>
-                <option value="<%= trantypes.transaction_type_id %>" <%= budget.transaction_type_id === trantypes.transaction_type_id ? 'selected' : '' %>>
-                    <%= trantypes.transaction_type %></option>
+            <% trantypes.forEach(type => { %>
+                <option value="<%= type.transaction_type_id %>" <%= budget.transaction_type_id === type.transaction_type_id ? 'selected' : '' %>>
+                    <%= type.transaction_type %></option>
             <% }) %>
         </select>
       </div>
