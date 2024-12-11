@@ -283,14 +283,17 @@ app.get("/budgets", (req, res) =>
     
 
 app.get("/transactions", (req, res) => {
-    knex.select('transaction_id',
-                'user_id',
-                'transaction_date',
-                'transaction_amount',  
-                'account_id',
-                'transaction_type_id'
-            )
-    .from('transactions')
+    knex('transactions')
+            .join('transaction_types', 'transaction_types.transaction_type_id', '=', 'transactions.transaction_type_id')
+            .join('accounts', 'accounts.account_id', '=', 'transactions.account_id')
+            .select(
+                    'transactions.transaction_id',
+                    'transactions.user_id',
+                    'transactions.transaction_date',
+                    'transactions.transaction_amount',
+                    'accounts.account_name',
+                    'transaction_types.transaction_type'
+                )
     .where({'user_id': req.session.user.user_id})
     .orderBy('transaction_date', 'desc')
     .then(transaction => {
@@ -300,7 +303,7 @@ app.get("/transactions", (req, res) => {
         res.status(500).json({ err });
     });
 });
-        
+
 
 
 app.get('/addTransaction/:user_id', (req, res) => {
