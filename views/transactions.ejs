@@ -92,12 +92,10 @@
         <table>
             <thead>
                 <tr>
-                    <th>Transaction ID</th>
-                    <th>User ID</th>
                     <th>Transaction Date</th>
                     <th>Transaction Amount</th>
-                    <th>Account ID</th>
-                    <th>Transaction Type ID</th>
+                    <th>Account</th>
+                    <th>Transaction Type</th>
                     <th>Edit</th>
                     <th>Delete</th>
                 </tr>  
@@ -105,12 +103,12 @@
             <tbody>
                 <% for (let iCount = 0; iCount < transaction.length; iCount++) { %>
                 <tr>                
-                    <td><%= transaction[iCount].transaction_id %></td>
-                    <td><%= transaction[iCount].user_id %></td>
-                    <td><%= transaction[iCount].transaction_date %></td>         
+                    <input type="hidden" value="transaction[iCount].transaction_id">
+                    <input type="hidden" value="transaction[iCount].user_id">
+                    <td><%= new Date(transaction[iCount].transaction_date).toLocaleDateString('en-US') %></td>    
                     <td><%= transaction[iCount].transaction_amount %></td>
-                    <td><%= transaction[iCount].account_id %></td>
-                    <td><%= transaction[iCount].transaction_type_id %></td>                              
+                    <td><%= transaction[iCount].account_name %></td>
+                    <td><%= transaction[iCount].transaction_type %></td>                              
                     <td>
                         <form action="/updateTransaction/<%= transaction[iCount].transaction_id %>" method="POST" class="action-buttons">
                             <button type="submit">Edit</button>
