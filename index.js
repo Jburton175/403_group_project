@@ -39,7 +39,7 @@ const knex = require("knex")({
         host: process.env.RDS_HOSTNAME || "localhost",
         user: process.env.RDS_USERNAME || "postgres",
         password: process.env.RDS_PASSWORD || "admin",
-        database: process.env.RDS_DB_NAME || "TurtleShelter",
+        database: process.env.RDS_DB_NAME || "budget_tracker",
         port: process.env.RDS_PORT || 5432,
         ssl: process.env.DB_SSL ? { rejectUnauthorized: false } : false
     }
@@ -54,9 +54,9 @@ const excludedRoutes = [
 
 // Middleware to enforce login check
 app.use((req, res, next) => {
-    console.log(req.session.user);
-    console.log(excludedRoutes);
-    console.log(req.path);
+    // console.log(req.session.user);
+    // console.log(excludedRoutes);
+    // console.log(req.path);
 
     // Skip excluded routes and favicon.ico
     if (
@@ -85,8 +85,8 @@ app.post('/login', (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
 
-    console.log(req.body.username);
-    console.log(req.body.password);
+    // console.log(req.body.username);
+    // console.log(req.body.password);
 
     knex('users')
         .select('user_id')
@@ -96,7 +96,7 @@ app.post('/login', (req, res) => {
         .then(user => {
             if (user) {
                 req.session.user = user; // Save volunteer to session
-                console.log('User logged in:', req.session.user);
+                // console.log('User logged in:', req.session.user);
                 res.redirect('/');
             } else {
                 console.log('Invalid username or password');
@@ -259,7 +259,7 @@ app.post('/editBudget/:id', (req, res) => {
         });
 });
 
-    app.get("/budgets", (req, res) =>
+app.get("/budgets", (req, res) =>
         {
             knex('budgets')
             .join('transaction_types', 'transaction_types.transaction_type_id', '=', 'budgets.transaction_type_id')
@@ -272,9 +272,9 @@ app.post('/editBudget/:id', (req, res) => {
                     'budgets.budget_amount'
             )
             .where('budgets.user_id' === req.session.user.user_id)
-            .orderBy('budgets.budget_date', desc)
-            .then( transactions => {
-                res.render("budget", {transaction: transactions });
+            .orderBy('budgets.budget_date', 'desc')
+            .then( budgets => {
+                res.render("budget", {budgets: budgets });
             }).catch(err => {
                 console.log(err);
                 res.status(500).json({err});
@@ -282,88 +282,94 @@ app.post('/editBudget/:id', (req, res) => {
         });
     
 
-app.get("/transactions", (req, res) =>
-    {
-        knex.select('transaction_id',
-            	'user_id',
-            	'transaction_date',
-            	'transaction_amount',	
-                'account_id',
-                'transaction_type_id'
-        )
-        .from('transactions')
-        .where({'user_id': req.session.user.user_id})
-        .orderBy('transaction_id')
-        .then( transactions => {
-            res.render("transactions", {transaction: transactions });
-        }).catch(err => {
-            console.log(err);
-            res.status(500).json({err});
-        });
-    });
-
-
-app.get('/addTransaction/:user_id', (req, res) => {
-    const user_id = req.params.user_id
-    // Fetch all necessary data in parallel using Promise.all
-    Promise.all([
-        knex('transactions')
+app.get("/transactions", (req, res) => {
+    knex('transactions')
+            .join('transaction_types', 'transaction_types.transaction_type_id', '=', 'transactions.transaction_type_id')
+            .join('accounts', 'accounts.account_id', '=', 'transactions.account_id')
             .select(
-                'transaction_id',
-                'user_id',
-                'transaction_date',
-                'transaction_amount',
-                'account_id',
-                'transaction_type_id'
-            )
-            .where('user_id', user_id),
-        knex('accounts')
-            .select('account_id', 'account_name', 'account_type'),
-        knex('transaction_types')
-            .select('transaction_type_id', 'transaction_type')
-    ])
-        .then(([transactions, accounts, transaction_types]) => {
-            // Render the view with all the fetched data
-            res.render('addTransaction', { transactions, accounts, transaction_types, user_id });
-        })
-        .catch(err => {
-            console.error('Error fetching data:', err.message);
-            res.status(500).send('Failed to load data for the transaction form.');
-        });
+                    'transactions.transaction_id',
+                    'transactions.user_id',
+                    'transactions.transaction_date',
+                    'transactions.transaction_amount',
+                    'accounts.account_name',
+                    'transaction_types.transaction_type'
+                )
+    .where({'user_id': req.session.user.user_id})
+    .orderBy('transaction_date', 'desc')
+    .then(transaction => {
+        res.render("transactions", { transaction: transaction, user: req.session.user });
+    }).catch(err => {
+        console.log(err);
+        res.status(500).json({ err });
+    });
 });
 
 
-app.post('/addTransaction', (req, res) => {
-    const date = req.body.transaction_date;  // Access form data sent via POST
-    const amount = parseInt(req.body.amount);  
-    const account = parseInt(req.body.account);  
-    const transaction_type = parseInt(req.body.transaction_type);  
-    const user_id = parseInt(req.body.user_id);
 
-    console.log('Request body:', req.body);
-  
+app.get('/addTransaction/:user_id', (req, res) => {
+        const user_id = req.params.user_id; // Fetch user_id from URL parameters
+       
+        // Fetch all necessary data in parallel using Promise.all
+        Promise.all([
+            knex('transactions')
+                .select(
+                    'transaction_id',
+                    'user_id',
+                    'transaction_date',
+                    'transaction_amount',
+                    'account_id',
+                    'transaction_type_id'
+                )
+                .where('user_id', user_id),
+            knex('accounts')
+                .select('account_id', 'account_name', 'account_type'),
+            knex('transaction_types')
+                .select('transaction_type_id', 'transaction_type')
+        ])
+            .then(([transactions, accounts, transaction_types]) => {
+                // Render the view with all the fetched data
+                res.render('addTransaction', { transactions, accounts, transaction_types, user_id });
+            })
+            .catch(err => {
+                console.error('Error fetching data:', err.message);
+                res.status(500).send('Failed to load data for the transaction form.');
+            });
+    });
+    
+
+
+app.post('/addTransaction', (req, res) => {
+    // Access form data sent via POST
+    const date = req.body.transaction_date;  // Date of the transaction
+    const amount = parseInt(req.body.amount);  // Amount of the transaction
+    const account = parseInt(req.body.account);  // Account ID selected in the form
+    const transaction_type = parseInt(req.body.transaction_type);  // Transaction Type ID selected in the form
+    const user_id = parseInt(req.body.user_id);  // User ID (hidden field)
+
+    console.log('Request body:', req.body);  // To check if the IDs are coming through correctly
+    
+    // Insert the data into the 'transactions' table
     knex('transactions')
         .insert({
             transaction_date: date,
             transaction_amount: amount, 
-            account_id: account,
-            transaction_type_id: transaction_type,
-            user_id: user_id
-            
+            account_id: account,  // Insert the account ID
+            transaction_type_id: transaction_type,  // Insert the transaction type ID
+            user_id: user_id  // Insert the user ID
         })
         .then(() => {
             console.log('Form submitted successfully!');
-            console.log('Request body:', req.body);
             res.redirect('/transactions'); 
         })
-  
         .catch(error => {
             console.error('Error adding the transaction:', error);
-            console.log('Request body:', req.body);
             res.status(500).send('Internal Server Error');
-
         });
-  });
+});
+   
+
+
+
 app.post('/deleteTransaction/:transaction_id', (req, res) => {
     const transaction_id = req.params.transaction_id;
 
