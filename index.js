@@ -157,8 +157,10 @@ app.get("/home", (req, res) =>
     });
 
 // render the budget creation page
-app.get("/createBudget", (req, res) =>
+app.get("/createBudget/:user_id", (req, res) =>
     {
+        const user_id = req.params.user_id
+
         knex('transaction_types')
         .select()
         .then(trantypes => {
@@ -167,7 +169,7 @@ app.get("/createBudget", (req, res) =>
             .select()
             .then(datetypes => {
 
-                res.render("createBudget", { trantypes, datetypes });
+                res.render("createBudget", { trantypes, datetypes, user_id});
 
             })
         })
@@ -175,7 +177,10 @@ app.get("/createBudget", (req, res) =>
 });
 
 app.post('/createBudget', (req, res) => {
-    
+
+
+
+    const user_id = req.body.user_id
     const transaction_type_id = req.body.transaction_type_id; // Access each value directly from req.body
     const budget_date = req.body.budget_date;
     const budget_date_type_id = req.body.budget_date_type_id;
@@ -183,6 +188,7 @@ app.post('/createBudget', (req, res) => {
 
 
     knex('budgets').insert({
+        user_id: user_id,
         transaction_type_id: transaction_type_id,
         budget_date: budget_date,
         budget_date_type_id: budget_date_type_id,
