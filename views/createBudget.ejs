@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form action="/createBudget/<% user_id %>" method="POST">
+        <fieldset style="width: 0px">
+            <legend>Create a Budget:</legend>
+            <br>
+            <label for="transaction_type_id">Budget for:</label>
+            <select name="transaction_type_id" id="transaction_type_id" required>
+                <option value="" disabled selected>Select an option</option>
+                <% states.forEach(function(trantypes) { %>
+                    <option value="<%= trantypes.transaction_type_id %>"><%= trantypes.transaction_type %></option>
+                <% }) %>
+            </select>
+            <br><br>
+            <label for="budget_amount">Amount Budgeted:</label>
+            <input type="number" id="budget_amount" name="budget_amount" required>
+            <br><br>
+            <label>Budget Type:</label>
+        <label>
+            <input type="radio" name="budget_date_type_id" value="2" checked> Weekly
+        </label>
+        <label>
+            <input type="radio" name="budget_date_type_id" value="1"> Monthly
+        </label>
+            <br><br>
+            <label for="budget_date">Start Date:</label>
+            <input type="date" id="budget_date" name="budget_date" required>
+            <br><br>
+            <button type="submit">Save</button>
+        </fieldset>
+    </form>
+</body>
+</html>
