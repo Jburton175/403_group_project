@@ -3,38 +3,141 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Create Budget</title>
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.form-container {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 500px;
+}
+
+h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #333;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 5px;
+}
+
+input, select {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+input[type="radio"] {
+    width: auto;
+    margin-right: 5px;
+}
+
+.radio-group label {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: block;
+    width: 100%;
+    margin-top: 15px;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+button[type="submit"] {
+    margin-bottom: 10px;
+}
+
+    </style>
 </head>
 <body>
-    <form action="/createBudget" method="POST">
-        <fieldset style="width: 0px">
-            <legend>Create a Budget:</legend>
-            <br>
-            <label for="transaction_type_id">Budget for:</label>
-            <select name="transaction_type_id" id="transaction_type_id" required>
-                <option value="<% trantypes.transaction_type_id %>"selected></option>
-                <% trantypes.forEach(function(trantypes) { %>
-                    <option value="<%= trantypes.transaction_type_id %>"><%= trantypes.transaction_type %></option>
-                <% }) %>
-            </select>
-            <br><br>
-            <label for="budget_amount">Amount Budgeted:</label>
-            <input type="number" id="budget_amount" name="budget_amount" required>
-            <br><br>
-            <label>Budget Type:</label>
-            <br>
-        <label>
-            <input type="radio" name="budget_date_type_id" value="2" checked> Weekly
-        </label>
-        <label>
-            <input type="radio" name="budget_date_type_id" value="1"> Monthly
-        </label>
-            <br><br>
-            <label for="budget_date">Start Date:</label>
-            <input type="date" id="budget_date" name="budget_date" required>
-            <br><br>
+    <section class="form-container" id="create_budget">
+        <form action="/createBudget" method="POST">
+            <h2>Create a Budget</h2>
+
+            <!-- hidden user id -->
+            <label for="user_id" hidden></label>
+            <input type="number" name="user_id" id="user_id" value="<%= user_id %>" hidden>
+
+            <!-- Budget For -->
+            <div class="form-group">
+                <label for="transaction_type_id">Budget for:</label>
+                <select name="transaction_type_id" id="transaction_type_id" required>
+                    <% trantypes.forEach(function(trantypes) { %>
+                        <option value="<%= trantypes.transaction_type_id %>">
+                            <%= trantypes.transaction_type %>
+                        </option>
+                    <% }) %>
+                </select>
+            </div>
+
+            <!-- Amount Budgeted -->
+            <div class="form-group">
+                <label for="budget_amount">Amount Budgeted:</label>
+                <input type="number" id="budget_amount" name="budget_amount" required>
+            </div>
+
+            <!-- Budget Date Type -->
+            <div class="form-group">
+                <label>Budget Type:</label>
+                <div class="radio-group">
+                    <% datetypes.forEach(type => { %>
+                        <label>
+                            <input type="radio" name="budget_date_type_id" id="budget_date_type_id" value="<%= type.budget_date_type_id %>">
+                            <%= type.budget_date_type %>
+                        </label>
+                    <% }) %>
+                </div>
+            </div>
+
+            <!-- Start Date -->
+            <div class="form-group">
+                <label for="budget_date">Start Date:</label>
+                <input type="date" id="budget_date" name="budget_date" required>
+            </div>
+
+            <!-- Submit Button -->
             <button type="submit">Save</button>
-        </fieldset>
-    </form>
+        </form>
+
+        <!-- Cancel Button -->
+        <form action="/budgets" method="GET">
+            <button type="submit">Cancel</button>
+        </form>
+    </section>
 </body>
 </html>

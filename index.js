@@ -194,7 +194,7 @@ app.post('/createBudget', (req, res) => {
         budget_date_type_id: budget_date_type_id,
         budget_amount: budget_amount,
     }).then(budget => {
-        res.redirect("/home");
+        res.redirect("/budgets");
     }).catch( err => {
         console.log(err);
         res.status(500).json({err});
