@@ -363,7 +363,8 @@ app.post('/addTransaction', (req, res) => {
             res.status(500).send('Internal Server Error');
         });
 });
-    
+   
+
 
 
 app.post('/deleteTransaction/:transaction_id', (req, res) => {

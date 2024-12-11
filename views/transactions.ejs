@@ -126,16 +126,9 @@
             </tbody>
         </table>  
         <div class="add-transaction">
-            <!-- Display the user ID -->
-            <p>User ID: <%= user.user_id %></p>
             <!-- Use the user ID in the form -->
             <form action="/addTransaction/<%= user.user_id %>" method="GET">
                 <button type="submit">Add Transaction</button>
-            </form>
-        </div>
-        <div class="search-transaction">
-            <form action="/searchTransaction" method="GET">
-                <button type="submit">Search Transaction</button>
             </form>
         </div>
     </div>
