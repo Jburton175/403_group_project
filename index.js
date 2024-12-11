@@ -174,6 +174,29 @@ app.get("/budgets", (req, res) =>
         
     });
 
+    app.get("/budgets", (req, res) =>
+        {
+            knex('budgets')
+            .join('transaction_types', 'transaction_types.transaction_type_id', '=', 'budgets.transaction_type_id')
+            .join('budget_date_types', 'budget_date_types.budget_date_type_id', '=', 'budgets.budget_date_type_id')
+            .select('budgets.budget_id', 
+                    'budgets.user_id', 
+                    'transaction_types.transaction_type',
+                    'budgets.budget_date',
+                    'budget_date_types.budget_date_type',
+                    'budgets.budget_amount'
+            )
+            .where('budgets.user_id' === req.session.user.user_id)
+            .orderBy('budgets.budget_date', desc)
+            .then( transactions => {
+                res.render("budget", {transaction: transactions });
+            }).catch(err => {
+                console.log(err);
+                res.status(500).json({err});
+            });
+        });
+    
+
 app.get("/transactions", (req, res) =>
     {
         knex.select()
