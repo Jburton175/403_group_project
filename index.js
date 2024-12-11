@@ -38,7 +38,7 @@ const knex = require("knex")({
     connection: {
         host: process.env.RDS_HOSTNAME || "localhost",
         user: process.env.RDS_USERNAME || "postgres",
-        password: process.env.RDS_PASSWORD || "Roadsinthewood2!",
+        password: process.env.RDS_PASSWORD || "admin",
         database: process.env.RDS_DB_NAME || "budget_tracker",
         port: process.env.RDS_PORT || 5432,
         ssl: process.env.DB_SSL ? { rejectUnauthorized: false } : false
@@ -275,7 +275,7 @@ app.get("/budgets", (req, res) =>
             .orderBy('budgets.budget_date', 'desc')
             .then( budgets => {
                 res.render("budgets", {budgets: budgets, user: req.session.user});
-                console.log(budgets)
+                // console.log(budgets);
             }).catch(err => {
                 console.log(err);
                 res.status(500).json({err});
@@ -371,30 +371,31 @@ app.post('/addTransaction', (req, res) => {
 
 app.get('/viewBudget/:budget_id', (req, res) => {
     const budget_id = req.params.budget_id; // Fetch user_id from URL parameters
-   
+//    console.log(budget_id);
     // Fetch all necessary data in parallel using Promise.all
     Promise.all([
         knex('budgets')
         .join('transaction_types', 'transaction_types.transaction_type_id', '=', 'budgets.transaction_type_id')
-        .join('budget_date_type', 'budget_date_type.budget_date_type_id', '=', 'budgets.budget_date_type_id')
+        .join('budget_date_types', 'budget_date_types.budget_date_type_id', '=', 'budgets.budget_date_type_id')
 
             .select(
                 'budgets.budget_id',
                 'budgets.user_id',
                 'transaction_types.transaction_type',
                 'budgets.budget_date',
-                'budget_date_type.budget_date_type',
+                'budget_date_types.budget_date_type',
                 'budgets.budget_amount'
             )
-            .where('budget_id', budget_id),
+            .where({'budget_id': budget_id}),
     ])
         .then(budgets => {
             // Render the view with all the fetched data
-            res.render('addTransaction', { budgets: budgets });
+            res.render('viewBudget', { budgets: budgets });
+            console.log(budgets);
         })
         .catch(err => {
             console.error('Error fetching data:', err.message);
-            res.status(500).send('Failed to load data for the transaction form.');
+            res.status(500).send('Failed to load data for the budget form.');
         });
 });
 
