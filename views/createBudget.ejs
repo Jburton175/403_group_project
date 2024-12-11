@@ -6,13 +6,13 @@
     <title>Document</title>
 </head>
 <body>
-    <form action="/createBudget/<% user_id %>" method="POST">
+    <form action="/createBudget" method="POST">
         <fieldset style="width: 0px">
             <legend>Create a Budget:</legend>
             <br>
             <label for="transaction_type_id">Budget for:</label>
             <select name="transaction_type_id" id="transaction_type_id" required>
-                <option value="" disabled selected>Select an option</option>
+                <option value="<% budget.transaction_type_id %>"selected></option>
                 <% states.forEach(function(trantypes) { %>
                     <option value="<%= trantypes.transaction_type_id %>"><%= trantypes.transaction_type %></option>
                 <% }) %>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Budget</title>
+  <!-- You can link to a CSS file if you need styling -->
+</head>
+<body>
+  <h1>Edit Budget</h1>
+  <br><br><br><br><br>
+  <form action="/editBudget/<%= budget.budget_id %>" method="POST">
+    <div>
+        <label for="transaction_type_id">Budget for:</label>
+        <select name="transaction_type_id" id="transaction_type_id">
+            <% role.forEach(trantypes => { %>
+                <option value="<%= trantypes.transaction_type_id %>" <%= budget.transaction_type_id === trantypes.transaction_type_id ? 'selected' : '' %>>
+                    <%= trantypes.transaction_type %></option>
+            <% }) %>
+        </select>
+      </div>
+
+    <div>
+      <label for="budget_amount">Amount Budgeted:</label>
+      <input type="number" id="budget_amount" name="budget_amount" required value="<%= budget.budget_amount %>">
+    </div>
+    
+    <label>Budget Type:</label>
+        <label>
+            <input type="radio" name="budget_date_type_id" value="2" <%= budget.budget_date_type_id === 2 ? 'checked' : '' %>> Weekly
+        </label>
+        <label>
+            <input type="radio" name="budget_date_type_id" value="1" <%= budget.budget_date_type_id === 1 ? 'checked' : '' %>> Monthly
+        </label>
+            <br><br>
+
+    <div>
+      <label for="budget_date">Start Date:</label>
+      <input type="date" id="budget_date" name="budget_date" required value="<%= budget.budget_date %>">
+    </div>
+
+    
+
+    <div>
+      <button type="submit">Finish Changes</button>
+    </div>
+  </form>
+
+</body>
+</html>
