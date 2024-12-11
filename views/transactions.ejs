@@ -14,7 +14,9 @@
                 <th>Transaction Date</th>
                 <th>Transaction Amount</th>
                 <th>Account ID</th>
-                <th>Transaction Type ID</th>                                                            
+                <th>Transaction Type ID</th>  
+                <th>Edit</th>                                                          
+                <th>Delete</th>
             </tr>  
         </thead>              
         <tbody>
@@ -27,12 +29,12 @@
                 <td><%= transaction[iCount].account_id %></td>
                 <td><%= transaction[iCount].transaction_type_id %></td>                              
                 <td>
-                    <form action="/updateTransaction/<%= pokemon[iCount].id %>" method="POST">
+                    <form action="/updateTransaction/<%= // transactions.[iCount].user_id %>" method="POST">
                         <button type="submit">Edit</button>
                     </form>
                 </td>
                 <td>
-                    <form action="/deleteTransaction/<%= pokemon[iCount].id %>" method="POST">
+                    <form action="/deleteTransaction/<%= //transaction.[iCount].user_id %>" method="POST">
                         <button type="submit">Delete</button>
                     </form>
                 </td>  
@@ -41,7 +43,7 @@
         </tbody>
     </table>  
     <br><br>
-    <form action="/addTransaction" method="GET">
+    <form action="/addTransaction/<%=transaction[0].user_id %>" method="GET">
         <button type="submit">Add</button>
     </form>   
 </body>

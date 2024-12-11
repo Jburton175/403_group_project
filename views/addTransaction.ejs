@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Transaction</title>
+</head>
+<body>
+    <section class="form-container" id="add_transaction">
+        <form action="/addTransaction" method="POST">
+            <h2>Add a Transaction</h2>
+
+            <div class="form-group">
+                <input type="hidden" name="user_id" value="<%= user_id %>">
+            </div>
+
+
+            <div class="form-group">
+                <label for="transaction_date">Date of Transaction:</label><br>
+                <input type="date" id="transaction_date" name="transaction_date" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="amount">Amount</label>
+                <input type="number" id="amount" name="amount" required>
+            </div>
+
+            <div class="form-group">
+                <label for="account">Account</label>
+                <select id="account" name="account" required>
+                    <% accounts.forEach(account => { %>
+                        <option value="<%= account.account_id %>">
+                            <%= account.account_name %> - <%= account.account_type %>
+                        </option>
+                    <% }); %>
+                </select>
+            </div>
+
+            <div class="form-group"></div>
+                <label for="transaction_type">Transaction Type</label>
+                <select id="transaction_type" name="transaction_type" required>
+                    <% transaction_types.forEach(transactionType => { %>
+                        <option value="<%= transactionType.transaction_type_id %>">
+                            <%= transactionType.transaction_type %>
+                        </option>
+                    <% }); %>
+                </select>
+            </div> <br>
+
+            <button type="submit">Submit</button>
+        </form>
+
+        <form action="/transactions" METHOD="GET">
+            <button type="submit">Cancel</button>
+        </form>
+    </section>
+</body>
+</html>

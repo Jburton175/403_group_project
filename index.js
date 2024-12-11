@@ -39,7 +39,7 @@ const knex = require("knex")({
         host: process.env.RDS_HOSTNAME || "localhost",
         user: process.env.RDS_USERNAME || "postgres",
         password: process.env.RDS_PASSWORD || "admin",
-        database: process.env.RDS_DB_NAME || "budget_tracker",
+        database: process.env.RDS_DB_NAME || "TurtleShelter",
         port: process.env.RDS_PORT || 5432,
         ssl: process.env.DB_SSL ? { rejectUnauthorized: false } : false
     }
@@ -174,11 +174,18 @@ app.get("/budgets", (req, res) =>
         
     });
 
+// render the transactions view
 app.get("/transactions", (req, res) =>
     {
-        knex.select()
+        knex.select('transaction_id',
+            	'user_id',
+            	'transaction_date',
+            	'transaction_amount',	
+                'account_id',
+                'transaction_type_id'
+        )
         .from('transactions')
-        .where('user_id' === req.session.user.user_id)
+        .where({'user_id': req.session.user.user_id})
         .orderBy('transaction_id')
         .then( transactions => {
             res.render("transactions", {transaction: transactions });
@@ -187,6 +194,69 @@ app.get("/transactions", (req, res) =>
             res.status(500).json({err});
         });
     });
+
+
+app.get('/addTransaction/:user_id', (req, res) => {
+    const user_id = req.params.user_id
+    // Fetch all necessary data in parallel using Promise.all
+    Promise.all([
+        knex('transactions')
+            .select(
+                'transaction_id',
+                'user_id',
+                'transaction_date',
+                'transaction_amount',
+                'account_id',
+                'transaction_type_id'
+            )
+            .where('user_id', user_id),
+        knex('accounts')
+            .select('account_id', 'account_name', 'account_type'),
+        knex('transaction_types')
+            .select('transaction_type_id', 'transaction_type')
+    ])
+        .then(([transactions, accounts, transaction_types]) => {
+            // Render the view with all the fetched data
+            res.render('addTransaction', { transactions, accounts, transaction_types, user_id });
+        })
+        .catch(err => {
+            console.error('Error fetching data:', err.message);
+            res.status(500).send('Failed to load data for the transaction form.');
+        });
+});
+
+
+app.post('/addTransaction', (req, res) => {
+    const date = req.body.transaction_date;  // Access form data sent via POST
+    const amount = parseInt(req.body.amount);  
+    const account = parseInt(req.body.account);  
+    const transaction_type = parseInt(req.body.transaction_type);  
+    const user_id = parseInt(req.body.user_id);
+
+    console.log('Request body:', req.body);
+  
+    knex('transactions')
+        .insert({
+            transaction_date: date,
+            transaction_amount: amount, 
+            account_id: account,
+            transaction_type_id: transaction_type,
+            user_id: user_id
+            
+        })
+        .then(() => {
+            console.log('Form submitted successfully!');
+            console.log('Request body:', req.body);
+            res.redirect('/transactions'); 
+        })
+  
+        .catch(error => {
+            console.error('Error adding the transaction:', error);
+            console.log('Request body:', req.body);
+            res.status(500).send('Internal Server Error');
+
+        });
+  });
 
     
 app.listen(port, () => console.log('listening'));
