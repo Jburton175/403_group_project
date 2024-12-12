@@ -50,8 +50,8 @@ const knex = require("knex")({
     connection: {
         host: process.env.RDS_HOSTNAME || "localhost",
         user: process.env.RDS_USERNAME || "postgres",
-        password: process.env.RDS_PASSWORD || "leomessi",
-        database: process.env.RDS_DB_NAME || "project3",
+        password: process.env.RDS_PASSWORD || "Roadsinthewood2!",
+        database: process.env.RDS_DB_NAME || "budget_tracker",
         port: process.env.RDS_PORT || 5432,
         ssl: process.env.DB_SSL ? { rejectUnauthorized: false } : false
     }
@@ -169,8 +169,10 @@ app.get("/home", (req, res) =>
     });
 
 // render the budget creation page
-app.get("/createBudget", (req, res) =>
+app.get("/createBudget/:user_id", (req, res) =>
     {
+        const user_id = req.params.user_id
+
         knex('transaction_types')
         .select()
         .then(trantypes => {
@@ -179,7 +181,7 @@ app.get("/createBudget", (req, res) =>
             .select()
             .then(datetypes => {
 
-                res.render("createBudget", { security, trantypes, datetypes });
+                res.render("createBudget", { trantypes, datetypes, user_id});
 
             })
         })
@@ -187,7 +189,10 @@ app.get("/createBudget", (req, res) =>
 });
 
 app.post('/createBudget', (req, res) => {
-    
+
+
+
+    const user_id = req.body.user_id
     const transaction_type_id = req.body.transaction_type_id; // Access each value directly from req.body
     const budget_date = req.body.budget_date;
     const budget_date_type_id = req.body.budget_date_type_id;
@@ -195,12 +200,13 @@ app.post('/createBudget', (req, res) => {
 
 
     knex('budgets').insert({
+        user_id: user_id,
         transaction_type_id: transaction_type_id,
         budget_date: budget_date,
         budget_date_type_id: budget_date_type_id,
         budget_amount: budget_amount,
     }).then(budget => {
-        res.redirect("/home");
+        res.redirect("/budgets");
     }).catch( err => {
         console.log(err);
         res.status(500).json({err});
@@ -208,28 +214,38 @@ app.post('/createBudget', (req, res) => {
 });
 
 app.get('/editBudget/:id', (req, res) => {
-    let id = req.params.budget_id
+    let id = req.params.id
     
     knex('budgets')
     .where('budget_id', id)
     .first()
     .then(budget => {
         if (!budget) {
-            return res.status(404).send('Volunteer not found');
+            return res.status(404).send('Budget not found');
+        }
+
+        if (budget.budget_date) {
+            budget.budget_date = new Date(budget.budget_date).toISOString().split('T')[0];
         }
   
         // query for sewing proficiency dropdown
         knex('transaction_types')
         .select('transaction_type_id', 'transaction_type') 
         .then(trantypes => {
-                            // Render the EJS template with all data
-                            res.render('editBudget', { budget, trantypes});
-                        })
-                        
-        .catch(error => {
-            console.error('Error fetching transaction types: ', error);
-            res.status(500).send('Internal Server Error');
-        });
+                knex('budget_date_types')
+                .select('budget_date_type_id', 'budget_date_type')
+                .then(datetypes => {
+                    res.render('editBudget', { budget, trantypes, datetypes});
+                })
+                .catch(error => {
+                    console.error('Error fetching budget date types: ', error);
+                    res.status(500).send('Internal Server Error');
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching transaction types: ', error);
+                res.status(500).send('Internal Server Error');
+            });
     })
     .catch(error => {
         console.error('Error fetching budget: ', error);
@@ -260,7 +276,7 @@ app.post('/editBudget/:id', (req, res) => {
         .then(() => {
             console.log('Form submitted successfully!');
             console.log('Request body:', req.body);
-            res.redirect('/home'); 
+            res.redirect('/budgets'); 
         })
   
         .catch(error => {
@@ -283,10 +299,11 @@ app.get("/budgets", (req, res) =>
                     'budget_date_types.budget_date_type',
                     'budgets.budget_amount'
             )
-            .where('budgets.user_id' === req.session.user.user_id)
+            .where({'user_id': req.session.user.user_id})
             .orderBy('budgets.budget_date', 'desc')
             .then( budgets => {
-                res.render("budget", {budgets: budgets });
+                res.render("budgets", {budgets: budgets, user: req.session.user});
+                // console.log(budgets);
             }).catch(err => {
                 console.log(err);
                 res.status(500).json({err});
@@ -295,14 +312,17 @@ app.get("/budgets", (req, res) =>
     
 
 app.get("/transactions", (req, res) => {
-    knex.select('transaction_id',
-                'user_id',
-                'transaction_date',
-                'transaction_amount',  
-                'account_id',
-                'transaction_type_id'
-            )
-    .from('transactions')
+    knex('transactions')
+            .join('transaction_types', 'transaction_types.transaction_type_id', '=', 'transactions.transaction_type_id')
+            .join('accounts', 'accounts.account_id', '=', 'transactions.account_id')
+            .select(
+                    'transactions.transaction_id',
+                    'transactions.user_id',
+                    'transactions.transaction_date',
+                    'transactions.transaction_amount',
+                    'accounts.account_name',
+                    'transaction_types.transaction_type'
+                )
     .where({'user_id': req.session.user.user_id})
     .orderBy('transaction_date', 'desc')
     .then(transaction => {
@@ -312,7 +332,7 @@ app.get("/transactions", (req, res) => {
         res.status(500).json({ err });
     });
 });
-        
+
 
 
 app.get('/addTransaction/:user_id', (req, res) => {
@@ -445,6 +465,35 @@ app.post('/editTransaction/:id', (req, res) => {
 });
 
 
+app.get('/viewBudget/:budget_id', (req, res) => {
+    const budget_id = req.params.budget_id; // Fetch user_id from URL parameters
+//    console.log(budget_id);
+    // Fetch all necessary data in parallel using Promise.all
+    Promise.all([
+        knex('budgets')
+        .join('transaction_types', 'transaction_types.transaction_type_id', '=', 'budgets.transaction_type_id')
+        .join('budget_date_types', 'budget_date_types.budget_date_type_id', '=', 'budgets.budget_date_type_id')
+
+            .select(
+                'budgets.budget_id',
+                'budgets.user_id',
+                'transaction_types.transaction_type',
+                'budgets.budget_date',
+                'budget_date_types.budget_date_type',
+                'budgets.budget_amount'
+            )
+            .where({'budget_id': budget_id}),
+    ])
+        .then(budgets => {
+            // Render the view with all the fetched data
+            res.render('viewBudget', { budgets: budgets });
+            console.log(budgets);
+        })
+        .catch(err => {
+            console.error('Error fetching data:', err.message);
+            res.status(500).send('Failed to load data for the budget form.');
+        });
+});
 
 
 app.post('/deleteTransaction/:transaction_id', (req, res) => {
@@ -471,7 +520,7 @@ app.post('/deleteBudget/:budget_id', (req, res) => {
         .del()
         .then(() => {
             console.log(`Budget: ${budget_id} removed`);
-            res.redirect('/budget'); // Redirect back to the dashboard after deletion
+            res.redirect('/budgets'); // Redirect back to the dashboard after deletion
         })
         .catch(err => {
             console.error('Error deleting budget:', err);
