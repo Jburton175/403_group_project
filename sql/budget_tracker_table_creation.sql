@@ -32,7 +32,7 @@ CREATE TABLE public.Budget_Date_Types (
 
 DROP TABLE IF EXISTS public.Transactions;
 CREATE TABLE public.Transactions (
-    transaction_id INT PRIMARY KEY NOT NULL,
+    transaction_id INT SERIAL PRIMARY KEY NOT NULL,
     user_id INT NOT NULL,
     transaction_date DATE NOT NULL,
     transaction_amount BIGINT NOT NULL,

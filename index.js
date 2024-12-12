@@ -33,13 +33,25 @@ app.use(express.static(__dirname + '/views'));
 app.use(express.urlencoded({extended: true}));
 
 
+// const knex = require("knex")({
+//     client: "pg",
+//     connection: {
+//         host: process.env.RDS_HOSTNAME || "localhost",
+//         user: process.env.RDS_USERNAME || "postgres",
+//         password: process.env.RDS_PASSWORD || "admin",
+//         database: process.env.RDS_DB_NAME || "budget_tracker",
+//         port: process.env.RDS_PORT || 5432,
+//         ssl: process.env.DB_SSL ? { rejectUnauthorized: false } : false
+//     }
+// });
+
 const knex = require("knex")({
     client: "pg",
     connection: {
         host: process.env.RDS_HOSTNAME || "localhost",
         user: process.env.RDS_USERNAME || "postgres",
-        password: process.env.RDS_PASSWORD || "admin",
-        database: process.env.RDS_DB_NAME || "budget_tracker",
+        password: process.env.RDS_PASSWORD || "leomessi",
+        database: process.env.RDS_DB_NAME || "project3",
         port: process.env.RDS_PORT || 5432,
         ssl: process.env.DB_SSL ? { rejectUnauthorized: false } : false
     }
@@ -364,6 +376,74 @@ app.post('/addTransaction', (req, res) => {
         });
 });
    
+app.get('/editTransaction/:id', (req, res) => {
+    const transaction_id = req.params.id;
+
+    Promise.all([
+        knex('transactions')
+            .select(
+                'transaction_id',
+                'user_id',
+                'transaction_date',
+                'transaction_amount',
+                'account_id',
+                'transaction_type_id'
+            )
+            .where('transaction_id', transaction_id)
+            .first(),
+        knex('accounts')
+            .select('account_id', 'account_name', 'account_type'),
+        knex('transaction_types')
+            .select('transaction_type_id', 'transaction_type')
+    ])
+        .then(([transactions, accounts, transaction_types]) => {
+            // Render the view with all the fetched data
+            res.render('editTransaction', { transactions, accounts, transaction_types, transaction_id });
+        })
+        .catch(err => {
+            console.error('Error fetching data:', err.message);
+            res.status(500).send('Failed to load data for the edit transaction form.');
+        });
+});
+
+app.post('/editTransaction/:id', (req, res) => {
+    const transaction_id = req.params.id; // Get the transaction ID from the URL parameter
+    const {
+        transaction_date,
+        transaction_amount,
+        account_id,
+        transaction_type_id
+    } = req.body; // Extract updated values from the form submission
+
+    // Validate and parse inputs
+    const updatedTransaction = {
+        transaction_date: transaction_date,
+        transaction_amount: isNaN(parseFloat(transaction_amount)) ? null : parseFloat(transaction_amount),
+        account_id: isNaN(parseInt(account_id)) ? null : parseInt(account_id),
+        transaction_type_id: isNaN(parseInt(transaction_type_id)) ? null : parseInt(transaction_type_id)
+    };
+    console.log('Request body:', req.body);
+
+
+    // Check if any required fields are null (optional validation)
+    if (!updatedTransaction.transaction_date || !updatedTransaction.transaction_amount || !updatedTransaction.account_id || !updatedTransaction.transaction_type_id) {
+        return res.status(400).send('Invalid input. Please ensure all fields are filled correctly.');
+    }
+
+    // Update the database
+    knex('transactions')
+        .where('transaction_id', transaction_id) // Match the record by transaction_id
+        .update(updatedTransaction)
+        .then(() => {
+            console.log('Transaction updated successfully');
+            res.redirect('/transactions'); // Redirect back to the transactions page
+        })
+        .catch((err) => {
+            console.error('Error updating transaction:', err.message);
+            res.status(500).send('Failed to update the transaction. Please try again.');
+        });
+});
+
 
 
 

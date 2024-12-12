@@ -112,7 +112,7 @@
                     <td><%= transaction[iCount].account_id %></td>
                     <td><%= transaction[iCount].transaction_type_id %></td>                              
                     <td>
-                        <form action="/updateTransaction/<%= transaction[iCount].transaction_id %>" method="POST" class="action-buttons">
+                        <form action="/editTransaction/<%= transaction[iCount].transaction_id %>" method="GET" class="action-buttons">
                             <button type="submit">Edit</button>
                         </form>
                     </td>
