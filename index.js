@@ -159,10 +159,52 @@ app.post('/createaccount', (req, res) => {
 });
 
 app.get('/', (req, res) => {
+    knex('transactions')
+    .join('transaction_types', 'transaction_types.transaction_type_id', '=', 'transactions.transaction_type_id')
+    .join('accounts', 'accounts.account_id', '=', 'transactions.account_id')
+    .select(
+        'transactions.transaction_id',
+        'transactions.user_id',
+        'transactions.transaction_date',
+        'transactions.transaction_amount',
+        'accounts.account_name',
+        'transaction_types.transaction_type'
+    )
+    .where({'user_id': req.session.user.user_id})
+    .orderBy('transaction_date', 'asc') // Ensure chronological order
+    .then(transactions => {
+        // Group transactions by date and sum amounts
+        const transactionsByDate = transactions.reduce((acc, transaction) => {
+            // Format date to YYYY-MM-DD for consistent grouping
+            const formattedDate = new Date(transaction.transaction_date).toISOString().split('T')[0];
+            
+            if (!acc[formattedDate]) {
+                acc[formattedDate] = 0;
+            }
+            acc[formattedDate] += transaction.transaction_amount;
+            return acc;
+        }, {});
 
-    res.render('index');
+        // Prepare data for ApexCharts
+        const chartData = {
+            series: [{
+                name: 'Daily Transaction Total',
+                data: Object.values(transactionsByDate)
+            }],
+            categories: Object.keys(transactionsByDate)
+        };
 
+        res.render("index", { 
+            transaction: transactions, 
+            user: req.session.user,
+            chartData: JSON.stringify(chartData)
+        });
+    }).catch(err => {
+        console.log(err);
+        res.status(500).json({ err });
+    });
 });
+
 
 app.get("/home", (req, res) =>
     {

@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Home</title>
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
   <style>
     /* Reset some default styles */
     * {
@@ -12,14 +13,16 @@
       box-sizing: border-box;
     }
 
-    /* Center the content on the page */
+    /* Modify body to use column layout */
     body {
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: center;
       min-height: 100vh;
       background-color: #f4f4f9;
       font-family: Arial, sans-serif;
+      padding: 2rem;
+      gap: 2rem; /* Adds space between elements */
     }
 
     /* Styling the container */
@@ -59,6 +62,15 @@
     .home-container .btn:hover {
       background-color: #0056b3;
     }
+
+    #chart {
+      width: 100%;
+      max-width: 800px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      padding: 1rem;
+    }
   </style>
 </head>
 <body>
@@ -67,5 +79,80 @@
     <a href="/budgets" class="btn">Budgets Page</a>
     <a href="/transactions" class="btn">Transactions Page</a>
   </div>
+
+  <!-- Chart div moved inside body -->
+  <div id="chart"></div>
+
+  <script>
+    // Parse the chart data passed from the server
+    const chartDataRaw = <%- chartData %>;
+
+    var options = {
+        series: [{
+            name: 'Daily Transaction Total',
+            data: chartDataRaw.series[0].data
+        }],
+        chart: {
+            type: 'bar',
+            height: 350,
+            width: '100%'
+        },
+        plotOptions: {
+            bar: {
+                horizontal: false,
+                columnWidth: '55%',
+                endingShape: 'rounded'
+            },
+        },
+        dataLabels: {
+            enabled: false
+        },
+        xaxis: {
+            categories: chartDataRaw.categories,
+            title: {
+                text: 'Transaction Dates'
+            },
+            labels: {
+                rotate: -45,
+                rotateAlways: true,
+                style: {
+                    fontSize: '10px'
+                }
+            }
+        },
+        yaxis: {
+            title: {
+                text: 'Total Amount'
+            }
+        },
+        title: {
+            text: 'Daily Transaction Totals',
+            align: 'left'
+        },
+        tooltip: {
+            y: {
+                formatter: function (val) {
+                    return "$" + val.toFixed(2)
+                }
+            }
+        },
+        responsive: [{
+            breakpoint: 480,
+            options: {
+                xaxis: {
+                    labels: {
+                        rotate: -90,
+                        style: {
+                            fontSize: '8px'
+                        }
+                    }
+                }
+            }
+        }]
+    };
+
+    var chart = new ApexCharts(document.querySelector("#chart"), options);
+    chart.render();
+</script>
 </body>
 </html>
