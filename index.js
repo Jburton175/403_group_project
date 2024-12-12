@@ -50,8 +50,8 @@ const knex = require("knex")({
     connection: {
         host: process.env.RDS_HOSTNAME || "localhost",
         user: process.env.RDS_USERNAME || "postgres",
-        password: process.env.RDS_PASSWORD || "Roadsinthewood2!",
-        database: process.env.RDS_DB_NAME || "budget_tracker",
+        password: process.env.RDS_PASSWORD || "leomessi",
+        database: process.env.RDS_DB_NAME || "project3",
         port: process.env.RDS_PORT || 5432,
         ssl: process.env.DB_SSL ? { rejectUnauthorized: false } : false
     }
@@ -442,7 +442,6 @@ app.post('/editTransaction/:id', (req, res) => {
         account_id: isNaN(parseInt(account_id)) ? null : parseInt(account_id),
         transaction_type_id: isNaN(parseInt(transaction_type_id)) ? null : parseInt(transaction_type_id)
     };
-    console.log('Request body:', req.body);
 
 
     // Check if any required fields are null (optional validation)
