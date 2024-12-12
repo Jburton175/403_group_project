@@ -11,6 +11,7 @@ app.use(express.urlencoded({ extended: true }));
 // Static files (CSS, images, etc.)
 app.use(express.static(path.join(__dirname, 'public')));
 
+
 // Set up EJS for templating
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
@@ -29,6 +30,7 @@ app.set("view engine", "ejs");
 
 app.set("views", path.join(__dirname, "views"));
 app.use(express.static(__dirname + '/views'));
+
 
 app.use(express.urlencoded({extended: true}));
 
@@ -50,8 +52,8 @@ const knex = require("knex")({
     connection: {
         host: process.env.RDS_HOSTNAME || "localhost",
         user: process.env.RDS_USERNAME || "postgres",
-        password: process.env.RDS_PASSWORD || "leomessi",
-        database: process.env.RDS_DB_NAME || "project3",
+        password: process.env.RDS_PASSWORD || "admin",
+        database: process.env.RDS_DB_NAME || "budget_tracker",
         port: process.env.RDS_PORT || 5432,
         ssl: process.env.DB_SSL ? { rejectUnauthorized: false } : false
     }
